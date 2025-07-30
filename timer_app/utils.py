@@ -1,9 +1,14 @@
-import sys
-import subprocess
+import pygame
+import threading
+
+pygame.mixer.init()
+_current_channel = None
 
 def play_sound(path):
-    if sys.platform.startswith('win'):
-        import winsound
-        winsound.PlaySound(path, winsound.SND_FILENAME)
-    else:
-        subprocess.call(['afplay', path])
+    def _play():
+        pygame.mixer.music.load(path)
+        pygame.mixer.music.play()
+    threading.Thread(target=_play, daemon=True).start()
+
+def stop_sound():
+    pygame.mixer.music.stop()

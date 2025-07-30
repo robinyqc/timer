@@ -3,8 +3,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from timer_app.stopwatch import Stopwatch
 from timer_app.countdown import Countdown
-from timer_app.utils import play_sound
-from timer_app.config import SHORTCUT_KEY, DEFAULT_SOUND
+from timer_app.config import load_config, save_config
 import threading
 
 class TimerApp:
@@ -12,9 +11,13 @@ class TimerApp:
         self.root = root
         self.root.title("Timer")
         self.root.geometry("320x240")
-        self.sound_path = DEFAULT_SOUND
 
-        self.lang = tk.StringVar(value="中文")
+        self.config = load_config()
+        self.sound_path = self.config.get("sound_path", "")
+        self.shortcut_start_stop = self.config.get("shortcuts", {}).get("start/stop", "<F5>")
+
+
+        self.lang = tk.StringVar(value=self.config.get("default_language", "English"))
         self.mode = tk.StringVar(value="stopwatch")
 
         self.widgets = []
@@ -22,9 +25,6 @@ class TimerApp:
         self.label = tk.Label(root, text="00:00:00", font=("Arial", 30))
         self.label.pack(pady=10)
         self.widgets.append(self.label)
-
-        self.stopwatch = Stopwatch(self.label)
-        self.countdown = Countdown(self.label)
 
         mode_frame = tk.Frame(root)
         mode_frame.pack()
@@ -61,11 +61,16 @@ class TimerApp:
         self.lang_btn = tk.Button(bottom_frame, text="Switch to English", command=self.switch_language)
         self.lang_btn.pack(side=tk.LEFT, padx=5)
 
-        self.root.bind(SHORTCUT_KEY, lambda event: self.toggle_start_stop())
+        self._refresh_labels()
+
+        self.root.bind(self.shortcut_start_stop, lambda event: self.toggle_start_stop())
         self.is_running = False
-        self.countdown_seconds = 0
+        self.countdown_10ms = 0
 
     def toggle_start_stop(self):
+        if hasattr(self, "countdown") and not self.countdown.active:
+            del self.countdown
+            self.is_running = False
         if self.is_running:
             self.stop()
         else:
@@ -73,11 +78,14 @@ class TimerApp:
 
     def start(self):
         if self.mode.get() == "stopwatch":
+            self.stopwatch = Stopwatch(self.label)
             self.stopwatch.start()
             self.is_running = True
         else:
-            if self.countdown_seconds > 0:
-                self.countdown.start(self.countdown_seconds, self.sound_path)
+            self.countdown = Countdown(self.label, self.root)
+            # print(self.countdown_10ms)
+            if self.countdown_10ms > 0:
+                self.countdown.start(self.countdown_10ms, self.sound_path)
                 self.is_running = True
             else:
                 messagebox.showwarning(self._("未设置时间"), self._("请先设置倒计时时间"))
@@ -85,13 +93,17 @@ class TimerApp:
     def stop(self):
         if self.mode.get() == "stopwatch":
             self.stopwatch.stop()
+            del self.stopwatch
         else:
             self.countdown.running = False
+            self.countdown_10ms = self.countdown.remaining
+            del self.countdown
         self.is_running = False
     
     def reset_stopwatch(self):
         if self.mode.get() == "stopwatch":
-            self.stopwatch.reset()
+            if hasattr(self, "stopwatch"):
+                del self.stopwatch
             self.label.config(text="00:00:00")
             self.is_running = False
 
@@ -99,15 +111,18 @@ class TimerApp:
         t = tk.simpledialog.askstring(self._("设置倒计时时间"), self._("格式为 hh:mm:ss"))
         try:
             h, m, s = map(int, t.strip().split(":"))
-            self.countdown_seconds = h * 3600 + m * 60 + s
+            self.countdown_10ms = (h * 3600 + m * 60 + s) * 100
             self.label.config(text=f"{h:02}:{m:02}:{s:02}")
         except:
             messagebox.showerror(self._("格式错误"), self._("请输入正确的时间格式，例如 00:05:00"))
 
     def load_sound(self):
-        path = filedialog.askopenfilename(title=self._("选择铃声"), filetypes=[("音频文件", "*.wav *.mp3")])
+        path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.mp3 *.wav")])
         if path:
             self.sound_path = path
+            self.config["sound_path"] = path
+            save_config(self.config)
+
 
     def switch_language(self):
         self.lang.set("English" if self.lang.get() == "中文" else "中文")

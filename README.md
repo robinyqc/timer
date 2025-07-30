@@ -17,4 +17,8 @@ pip install -r requirements.txt
 python -m timer_app.main
 ```
 
+## Configuration
+
+In `~/.timer_config.toml`。
+
 (Fully AI generated project)
