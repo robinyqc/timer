@@ -41,16 +41,19 @@ class TimerApp:
         self.start_stop_btn = tk.Button(btn_frame, text="开始/停止", command=self.toggle_start_stop)
         self.start_stop_btn.pack(side=tk.LEFT, padx=5)
         self.set_btn = tk.Button(btn_frame, text="设定时间", command=self.set_time)
+        self.reset_btn = tk.Button(btn_frame, text="清零", command=self.reset_stopwatch)
         if self.mode.get() == "countdown":
             self.set_btn.pack(side=tk.LEFT, padx=5)
+        else:
+            self.reset_btn.pack(side=tk.LEFT, padx=5)
         def on_mode_change(*args):
             if self.mode.get() == "countdown":
                 self.set_btn.pack(side=tk.LEFT, padx=5)
+                self.reset_btn.pack_forget()
             else:
+                self.reset_btn.pack(side=tk.LEFT, padx=5)
                 self.set_btn.pack_forget()
         self.mode.trace_add("write", on_mode_change)
-        self.reset_btn = tk.Button(btn_frame, text="清零", command=self.reset_stopwatch)
-        self.reset_btn.pack(side=tk.LEFT, padx=5)
         self.widgets.extend([self.start_stop_btn, self.reset_btn, self.set_btn])
 
         bottom_frame = tk.Frame(root)
