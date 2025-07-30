@@ -16,6 +16,10 @@ class Stopwatch:
     def stop(self):
         self.running = False
 
+    def reset(self):
+        self.running = False
+        self.elapsed = 0
+
     def _update(self):
         if self.running:
             self.elapsed = time.time() - self.start_time
