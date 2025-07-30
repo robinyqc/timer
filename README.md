@@ -21,4 +21,4 @@ python -m timer_app.main
 
 In `~/.timer_config.toml`.
 
-(Fully AI generated project)
+(Partly AI generated project)
