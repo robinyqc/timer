@@ -19,6 +19,6 @@ python -m timer_app.main
 
 ## Configuration
 
-In `~/.timer_config.toml`。
+In `~/.timer_config.toml`.
 
 (Fully AI generated project)
