@@ -84,6 +84,7 @@ class TimerApp:
             self.stopwatch = Stopwatch(self.label)
             self.stopwatch.start()
             self.is_running = True
+            self.reset_btn.config(state="disabled")
         else:
             self.countdown = Countdown(self.label, self.root)
             # print(self.countdown_10ms)
@@ -95,6 +96,7 @@ class TimerApp:
 
     def stop(self):
         if self.mode.get() == "stopwatch":
+            self.reset_btn.config(state="normal")
             self.stopwatch.stop()
             del self.stopwatch
         else:
