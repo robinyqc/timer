@@ -2,7 +2,6 @@ import pygame
 import threading
 
 pygame.mixer.init()
-_current_channel = None
 
 def play_sound(path):
     def _play():

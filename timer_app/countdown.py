@@ -1,9 +1,6 @@
-import tkinter as tk
 from tkinter import messagebox
-import threading
 from timer_app.utils import play_sound, stop_sound
 from timer_app.config import load_config
-import sys
 
 class Countdown:
     def __init__(self, display_label, master):

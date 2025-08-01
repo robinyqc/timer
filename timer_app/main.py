@@ -1,10 +1,8 @@
-import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from timer_app.stopwatch import Stopwatch
 from timer_app.countdown import Countdown
 from timer_app.config import load_config, save_config
-import threading
 
 class TimerApp:
     def __init__(self, root):

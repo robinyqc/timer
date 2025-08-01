@@ -1,5 +1,4 @@
 import time
-import tkinter as tk
 
 class Stopwatch:
     def __init__(self, display_label):
