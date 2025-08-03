@@ -3,7 +3,6 @@
 A cross-platform stopwatch and countdown timer with GUI (Tkinter), supporting:
 - Stopwatch and countdown modes
 - Custom alarm sounds
-- Night mode
 - Global/local shortcuts
 
 ## Quick Start
